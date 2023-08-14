@@ -1,6 +1,7 @@
 package action
 
 import (
+	"encoding/json"
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"os"
@@ -16,6 +17,7 @@ type Action struct {
 	ResponseConfig   map[string]interface{} `yaml:"response_config"`
 	ResponseType     string                 `yaml:"response_type"`
 	Paginate         bool                   `yaml:"paginate"`
+	ResponseStatus   int                    `yaml:"response_status"`
 }
 
 func LoadAction(servicePath string, name string) (Action, error) {
@@ -38,4 +40,18 @@ func LoadAction(servicePath string, name string) (Action, error) {
 		return Action{}, err
 	}
 	return config["action"], nil
+}
+
+func (a *Action) RunAction() (int, any) {
+	switch a.ResponseType {
+	case "plain/text":
+		return a.ResponseStatus, a.Response
+	case "application/json":
+		var jsonResponse map[string]interface{}
+		json.Unmarshal([]byte(a.Response), &jsonResponse)
+		return a.ResponseStatus, jsonResponse
+	case "application/xml", "text/xml":
+		return a.ResponseStatus, a.Response
+	}
+	return a.ResponseStatus, a.Response
 }

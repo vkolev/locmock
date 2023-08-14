@@ -31,6 +31,7 @@ func TestLoadAction(t *testing.T) {
 		ResponseConfig: nil,
 		ResponseType:   "plain/text",
 		Paginate:       false,
+		ResponseStatus: 200,
 	}
 	got, err := action.LoadAction(servicePath, "hello")
 	if err != nil {

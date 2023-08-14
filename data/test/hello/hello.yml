@@ -9,7 +9,8 @@ action:
       type: string
       required: false
   response: hello test
-  response_type: "plain/text"
+  response_type: plain/text
   response_config:
+  response_status: 200
   paginate: false
 

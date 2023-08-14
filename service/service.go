@@ -8,7 +8,7 @@ import (
 
 type Service struct {
 	Name    string
-	Actions []action.Action
+	Actions map[string]action.Action
 }
 
 func NewFromPath(path string) (Service, error) {
@@ -16,6 +16,7 @@ func NewFromPath(path string) (Service, error) {
 	service := Service{
 		Name: pathName,
 	}
+	serviceActions := make(map[string]action.Action)
 	files, err := os.ReadDir(path)
 	if err != nil {
 		return Service{}, err
@@ -27,8 +28,13 @@ func NewFromPath(path string) (Service, error) {
 				return Service{}, nil
 				break
 			}
-			service.Actions = append(service.Actions, a)
+			serviceActions[a.Name] = a
 		}
 	}
+	service.Actions = serviceActions
 	return service, nil
+}
+
+func GetServices(rootPath string) ([]Service, error) {
+	return make([]Service, 0), nil
 }
