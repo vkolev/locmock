@@ -56,7 +56,7 @@ func TestLoadConfigInvalidPathCreatesNewFile(t *testing.T) {
 	dataPath := strings.Replace(filename, "locmock_test.go", "data", 1)
 	configFilePath := filepath.Join(dataPath, "locmock_test.yml")
 	want := locmock.Config{
-		DataPath: "/Users/vladi/GolandProjects/locmock/data",
+		DataPath: dataPath,
 		Port:     ":8080",
 	}
 	got, err := locmock.LoadConfig(configFilePath)
