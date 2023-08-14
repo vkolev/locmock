@@ -1,13 +1,15 @@
+---
 action:
-  name: "hello"
-  method: "GET"
+  name: hello
+  method: GET
   parameters:
-    q: "test"
+    q: test
   parameters_config:
     q:
       type: string
-      required: No
-  response: "hello test"
+      required: false
+  response: hello test
   response_type: "plain/text"
   response_config:
+  paginate: false
 
