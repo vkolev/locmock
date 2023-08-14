@@ -1,0 +1,13 @@
+action:
+  name: "hello"
+  method: "GET"
+  parameters:
+    q: "test"
+  parameters_config:
+    q:
+      type: string
+      required: No
+  response: "hello test"
+  response_type: "plain/text"
+  response_config:
+
