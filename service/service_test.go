@@ -21,7 +21,7 @@ func TestService_NewFromPath(t *testing.T) {
 	if service.Name != serviceName {
 		t.Errorf("want: %v, got %v", serviceName, service.Name)
 	}
-	wantLen := 1
+	wantLen := 2
 	gotLen := len(service.Actions)
 	if wantLen != gotLen {
 		t.Errorf("want len %d, got len %d", wantLen, gotLen)
@@ -52,7 +52,7 @@ func TestService_GetActions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	wantLen := 1
+	wantLen := 2
 	actionsResponse := tService.GetActions()
 	gotLen := len(actionsResponse.Actions)
 	if wantLen != gotLen {
