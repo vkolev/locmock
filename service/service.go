@@ -16,6 +16,17 @@ type ServiceResponse struct {
 	ActionsCount int
 }
 
+type ActionDescription struct {
+	Name        string
+	Description string
+	Method      string
+	StatusCode  int
+}
+
+type ServiceActionsResponse struct {
+	Actions []ActionDescription
+}
+
 func NewFromPath(path string) (Service, error) {
 	pathName := filepath.Base(path)
 	service := Service{
@@ -70,4 +81,19 @@ func GetServices(rootPath string) ([]ServiceResponse, error) {
 	}
 
 	return response, nil
+}
+
+func (s *Service) GetActions() ServiceActionsResponse {
+	serviceActions := make([]ActionDescription, 0)
+	for _, a := range s.Actions {
+		serviceActions = append(
+			serviceActions,
+			ActionDescription{
+				Name:        a.Name,
+				Description: a.Name,
+				Method:      a.Method,
+				StatusCode:  a.ResponseStatus,
+			})
+	}
+	return ServiceActionsResponse{Actions: serviceActions}
 }

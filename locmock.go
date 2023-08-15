@@ -75,9 +75,7 @@ func Run(config Config) {
 	// Admin routes to create/delete/update services and actions
 	router.GET("/admin/services", listServices)
 
-	router.GET("/admin/service/:service/actions", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"admin": fmt.Sprintf("get %v service actions", c.Param("service"))})
-	})
+	router.GET("/admin/service/:service/actions", listServiceActions)
 
 	router.POST("/admin", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"admin": "create service"})
