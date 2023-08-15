@@ -7,24 +7,24 @@ import (
 )
 
 type Service struct {
-	Name    string
-	Actions map[string]action.Action
+	Name    string                   `json:"name"`
+	Actions map[string]action.Action `json:"actions"`
 }
 
 type ServiceResponse struct {
-	Name         string
-	ActionsCount int
+	Name         string `json:"name"`
+	ActionsCount int    `json:"actions_count"`
 }
 
 type ActionDescription struct {
-	Name        string
-	Description string
-	Method      string
-	StatusCode  int
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Method      string `json:"method"`
+	StatusCode  int    `json:"status_code"`
 }
 
 type ServiceActionsResponse struct {
-	Actions []ActionDescription
+	Actions []ActionDescription `json:"actions"`
 }
 
 func NewFromPath(path string) (Service, error) {

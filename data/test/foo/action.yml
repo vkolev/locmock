@@ -1,0 +1,12 @@
+---
+action:
+    name: foo
+    description: Foo bar action
+    method: POST
+    parameters: {}
+    parameters_config: {}
+    response: '{"foo": "bar", "test": 123}'
+    response_config: {}
+    response_type: application/json
+    paginate: false
+    response_status: 201

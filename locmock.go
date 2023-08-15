@@ -77,9 +77,11 @@ func Run(config Config) {
 
 	router.GET("/admin/service/:service/actions", listServiceActions)
 
-	router.POST("/admin", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"admin": "create service"})
-	})
+	router.POST("/admin/service/:service/actions", createNewAction)
+
+	router.PUT("admin/service/:service/action/:action", updateAction)
+
+	router.DELETE("admin/service/:service/action/:action", deleteAction)
 
 	router.DELETE("/admin/:id", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"admin": fmt.Sprintf("delete %v", c.Param("id"))})
@@ -111,6 +113,9 @@ func Run(config Config) {
 				"query":   values,
 			})
 			return
+		}
+		if action.Method != c.Request.Method {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Unsupported request method"})
 		}
 		c.JSON(action.RunAction())
 	})

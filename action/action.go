@@ -9,19 +9,20 @@ import (
 )
 
 type Action struct {
-	Name             string                 `yaml:"name"`
-	Method           string                 `yaml:"method"`
-	Parameters       map[string]interface{} `yaml:"parameters"`
-	ParametersConfig map[string]interface{} `yaml:"parameters_config"`
-	Response         string                 `yaml:"response"`
-	ResponseConfig   map[string]interface{} `yaml:"response_config"`
-	ResponseType     string                 `yaml:"response_type"`
-	Paginate         bool                   `yaml:"paginate"`
-	ResponseStatus   int                    `yaml:"response_status"`
+	Name             string                 `yaml:"name" json:"name"`
+	Description      string                 `yaml:"description" json:"description"`
+	Method           string                 `yaml:"method" json:"method"`
+	Parameters       map[string]interface{} `yaml:"parameters" json:"parameters"`
+	ParametersConfig map[string]interface{} `yaml:"parameters_config" json:"parameters_config"`
+	Response         string                 `yaml:"response" json:"response"`
+	ResponseConfig   map[string]interface{} `yaml:"response_config" json:"response_config"`
+	ResponseType     string                 `yaml:"response_type" json:"response_type"`
+	Paginate         bool                   `yaml:"paginate" json:"paginate"`
+	ResponseStatus   int                    `yaml:"response_status" json:"response_status"`
 }
 
 func LoadAction(servicePath string, name string) (Action, error) {
-	yamlFile, err := os.Open(filepath.Join(servicePath, name, fmt.Sprintf("%v.yml", name)))
+	yamlFile, err := os.Open(filepath.Join(servicePath, name, fmt.Sprintf("action.yml")))
 	if err != nil {
 		return Action{}, err
 	}
@@ -42,16 +43,46 @@ func LoadAction(servicePath string, name string) (Action, error) {
 	return config["action"], nil
 }
 
+func createActionFile(path string, newAction Action) string {
+	dirPath := filepath.Join(path, newAction.Name)
+	_ = os.MkdirAll(dirPath, 0750)
+	filePath := filepath.Join(dirPath, "action.yml")
+	_, _ = os.Create(filePath)
+	return filePath
+}
+
+func CreateAction(servicePath string, newAction Action) (Action, error) {
+	actionFilePath := createActionFile(servicePath, newAction)
+	yamlFile, err := os.OpenFile(actionFilePath, os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		return Action{}, err
+	}
+	defer yamlFile.Close()
+	config := make(map[string]Action)
+	config["action"] = newAction
+	yamlData, err := yaml.Marshal(&config)
+	if err != nil {
+		return Action{}, err
+	}
+	_, err = yamlFile.Write(yamlData)
+	if err != nil {
+		return Action{}, err
+	}
+	return newAction, nil
+}
+
 func (a *Action) RunAction() (int, any) {
+	statusCode := a.ResponseStatus
+	var response any
 	switch a.ResponseType {
 	case "plain/text":
-		return a.ResponseStatus, a.Response
+		response = a.Response
 	case "application/json":
 		var jsonResponse map[string]interface{}
-		json.Unmarshal([]byte(a.Response), &jsonResponse)
-		return a.ResponseStatus, jsonResponse
+		_ = json.Unmarshal([]byte(a.Response), &jsonResponse)
+		response = jsonResponse
 	case "application/xml", "text/xml":
-		return a.ResponseStatus, a.Response
+		response = a.Response
 	}
-	return a.ResponseStatus, a.Response
+	return statusCode, response
 }
