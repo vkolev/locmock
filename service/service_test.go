@@ -14,15 +14,15 @@ func TestService_NewFromPath(t *testing.T) {
 	dataPath := strings.Replace(filename, "service/service_test.go", "data", 1)
 	serviceName := "test"
 	servicePath := filepath.Join(dataPath, serviceName)
-	service, err := service.NewFromPath(servicePath)
+	tService, err := service.NewFromPath(servicePath)
 	if err != nil {
 		t.Errorf("Unable to load service: %v", err)
 	}
-	if service.Name != serviceName {
-		t.Errorf("want: %v, got %v", serviceName, service.Name)
+	if tService.Name != serviceName {
+		t.Errorf("want: %v, got %v", serviceName, tService.Name)
 	}
 	wantLen := 2
-	gotLen := len(service.Actions)
+	gotLen := len(tService.Actions)
 	if wantLen != gotLen {
 		t.Errorf("want len %d, got len %d", wantLen, gotLen)
 	}
