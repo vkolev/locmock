@@ -66,7 +66,11 @@ func Run(config Config) {
 
 	// Admin routes to create/delete/update services and actions
 	router.GET("/admin/services", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"admin": "get all services"})
+		services, err := service.GetServices(config.DataPath)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err)
+		}
+		c.JSON(http.StatusOK, services)
 	})
 
 	router.GET("/admin/service/:service/actions", func(c *gin.Context) {
@@ -96,6 +100,7 @@ func Run(config Config) {
 				"action":  actionName,
 				"query":   values,
 			})
+			return
 		}
 		action, ok := service.Actions[strings.TrimLeft(actionName, "/")]
 		if !ok {

@@ -11,6 +11,11 @@ type Service struct {
 	Actions map[string]action.Action
 }
 
+type ServiceResponse struct {
+	Name         string
+	ActionsCount int
+}
+
 func NewFromPath(path string) (Service, error) {
 	pathName := filepath.Base(path)
 	service := Service{
@@ -35,6 +40,34 @@ func NewFromPath(path string) (Service, error) {
 	return service, nil
 }
 
-func GetServices(rootPath string) ([]Service, error) {
-	return make([]Service, 0), nil
+func filterDirectories(files []os.DirEntry) []os.DirEntry {
+	filtered := make([]os.DirEntry, 0)
+	for _, file := range files {
+		if file.IsDir() {
+			filtered = append(filtered, file)
+		}
+	}
+	return filtered
+}
+
+func GetServices(rootPath string) ([]ServiceResponse, error) {
+	files, err := os.ReadDir(rootPath)
+	if err != nil {
+		return make([]ServiceResponse, 0), err
+	}
+
+	var response []ServiceResponse
+
+	for _, file := range files {
+		if file.IsDir() {
+			serviceFiles, _ := os.ReadDir(filepath.Join(rootPath, file.Name()))
+			serviceFiles = filterDirectories(serviceFiles)
+			response = append(response, ServiceResponse{
+				Name:         filepath.Base(file.Name()),
+				ActionsCount: len(serviceFiles),
+			})
+		}
+	}
+
+	return response, nil
 }
