@@ -57,21 +57,23 @@ func LoadConfig(path string) (Config, error) {
 	return config, nil
 }
 
+func configMiddleware(config *Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set("dataPath", config.DataPath)
+		c.Next()
+	}
+}
+
 func Run(config Config) {
 	// Create default router
 	router := gin.New()
 
 	// Add middlewares
 	router.Use(cors.Default())
+	router.Use(configMiddleware(&config))
 
 	// Admin routes to create/delete/update services and actions
-	router.GET("/admin/services", func(c *gin.Context) {
-		services, err := service.GetServices(config.DataPath)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err)
-		}
-		c.JSON(http.StatusOK, services)
-	})
+	router.GET("/admin/services", listServices)
 
 	router.GET("/admin/service/:service/actions", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"admin": fmt.Sprintf("get %v service actions", c.Param("service"))})
