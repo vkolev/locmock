@@ -42,7 +42,8 @@ func LoadConfig(path string) (Config, error) {
 			DataPath: getDefaultDataPath(),
 			Port:     ":8080",
 		}
-		data, err := yaml.Marshal(config)
+		var data []byte
+		data, _ = yaml.Marshal(config)
 		err = os.WriteFile(path, data, 0666)
 		if err != nil {
 			panic(err)
@@ -120,5 +121,5 @@ func Run(config Config) {
 		c.JSON(action.RunAction())
 	})
 
-	router.Run(config.Port)
+	_ = router.Run(config.Port)
 }
