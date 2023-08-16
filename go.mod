@@ -3,9 +3,11 @@ module github.com/vkolev/locmock
 go 1.20
 
 require (
+	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/google/go-cmp v0.5.9
+	github.com/vkolev/locmock/action v0.0.0-20230814175333-079dce7814fd
 	github.com/vkolev/locmock/service v0.0.0-00010101000000-000000000000
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -32,7 +34,6 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
-	github.com/vkolev/locmock/action v0.0.0-20230814175333-079dce7814fd // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/net v0.10.0 // indirect

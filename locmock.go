@@ -88,6 +88,8 @@ func Run(config Config) {
 
 	router.POST("admin/service/:service/actions/delete", bulkDeleteActions)
 
+	addUtilityRoads(&router)
+
 	// The magic catcher method - catch all requests and call appropriate service/action and return response
 	router.Any("/:service/*action", func(c *gin.Context) {
 		serviceName := c.Param("service")
@@ -122,4 +124,12 @@ func Run(config Config) {
 	})
 
 	_ = router.Run(config.Port)
+}
+
+func addUtilityRoads(i **gin.Engine) {
+	router := (*i).Group("/l")
+	router.GET("/ping", getPing)
+	router.GET("/ip", getIp)
+	router.GET("/person", personProfile)
+	router.GET("/user-agent", userAgent)
 }
