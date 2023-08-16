@@ -78,11 +78,15 @@ func Run(config Config) {
 
 	router.GET("/admin/service/:service/actions", listServiceActions)
 
-	router.POST("/admin/service/:service/actions", createNewAction)
+	router.POST("/admin/service/:service/action", createNewAction)
+
+	router.POST("/admin/service/:service/actions", bulkCreateActions)
 
 	router.PUT("admin/service/:service/action/:action", updateAction)
 
 	router.DELETE("admin/service/:service/action/:action", deleteAction)
+
+	router.POST("admin/service/:service/actions/delete", bulkDeleteActions)
 
 	// The magic catcher method - catch all requests and call appropriate service/action and return response
 	router.Any("/:service/*action", func(c *gin.Context) {
