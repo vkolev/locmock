@@ -84,11 +84,7 @@ func Run(config Config) {
 
 	router.DELETE("admin/service/:service/action/:action", deleteAction)
 
-	router.DELETE("/admin/:id", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"admin": fmt.Sprintf("delete %v", c.Param("id"))})
-	})
-
-	// The megic catcher method - catch all requests and call appropriate service/action and return response
+	// The magic catcher method - catch all requests and call appropriate service/action and return response
 	router.Any("/:service/*action", func(c *gin.Context) {
 		serviceName := c.Param("service")
 		actionName := c.Param("action")

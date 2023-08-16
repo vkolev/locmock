@@ -38,14 +38,16 @@ func listServiceActions(c *gin.Context) {
 }
 
 func createNewAction(c *gin.Context) {
-	serviceName := c.Param("service")
-	dataPath, _ := c.Get("dataPath")
-	servicePath := filepath.Join(dataPath.(string), serviceName)
 	var newAction action.Action
 	err := c.BindJSON(&newAction)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 	}
+
+	serviceName := c.Param("service")
+	dataPath, _ := c.Get("dataPath")
+	servicePath := filepath.Join(dataPath.(string), serviceName)
+
 	_, err = action.CreateAction(servicePath, newAction)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
@@ -54,14 +56,15 @@ func createNewAction(c *gin.Context) {
 }
 
 func updateAction(c *gin.Context) {
-	serviceName := c.Param("service")
-	dataPath, _ := c.Get("dataPath")
-	servicePath := filepath.Join(dataPath.(string), serviceName)
 	var newAction action.Action
 	err := c.BindJSON(&newAction)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 	}
+
+	serviceName := c.Param("service")
+	dataPath, _ := c.Get("dataPath")
+	servicePath := filepath.Join(dataPath.(string), serviceName)
 	_, err = action.CreateAction(servicePath, newAction)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
@@ -77,7 +80,9 @@ func deleteAction(c *gin.Context) {
 	actionPath := filepath.Join(servicePath, actionName)
 	if _, err := os.Stat(actionPath); !os.IsExist(err) {
 		// The requested action does not exist
-		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Cannot find action %q for service %q", actionName, serviceName)})
+		c.JSON(http.StatusNotFound,
+			gin.H{"error": fmt.Sprintf("Cannot find action %q for service %q", actionName, serviceName)},
+		)
 		return
 	}
 	err := os.RemoveAll(actionPath)
