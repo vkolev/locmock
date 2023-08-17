@@ -133,4 +133,7 @@ func addUtilityRoads(i **gin.Engine) {
 	router.GET("/person", personProfile)
 	router.GET("/user-agent", userAgent)
 	router.GET("/uuid", uuidResponse)
+	router.POST("/form", formRequest)
+	router.PUT("/form", formRequest)
+	router.PATCH("/form", formRequest)
 }

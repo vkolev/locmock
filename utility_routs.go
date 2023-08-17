@@ -4,6 +4,7 @@ import (
 	randomdata "github.com/Pallinder/go-randomdata"
 	"github.com/gin-gonic/gin"
 	"github.com/twinj/uuid"
+	"mime/multipart"
 	"net"
 	"net/http"
 )
@@ -55,4 +56,20 @@ func uuidResponse(c *gin.Context) {
 		// Add namspace and arguments from Query Parameters
 		c.String(http.StatusOK, uuid.NewV5(uuid.NameSpaceURL).String())
 	}
+}
+
+func formRequest(c *gin.Context) {
+	_ = c.Request.ParseMultipartForm(2048)
+	requestedForm := c.Request.Form
+	var file map[string][]*multipart.FileHeader
+	if c.Request.MultipartForm != nil {
+		file = c.Request.MultipartForm.File
+	}
+	requestHeaders := c.Request.Header
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"form":    requestedForm,
+		"headers": requestHeaders,
+		"method":  c.Request.Method,
+		"file":    file,
+	})
 }
