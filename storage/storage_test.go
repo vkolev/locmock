@@ -66,3 +66,57 @@ func TestStorage_GetActionsForService(t *testing.T) {
 		t.Errorf(cmp.Diff(want, got))
 	}
 }
+
+func TestStorage_CreateActionFile(t *testing.T) {
+	t.Parallel()
+	memFs := afero.Afero{Fs: afero.NewMemMapFs()}
+	s := storage.NewOsStorage(memFs)
+
+	actionFilePath := "test/example/hello.yml"
+	actionFileData := []byte("test: hello")
+
+	err := s.CreateActionFile(actionFilePath, actionFileData)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ok, err := s.Fs.Exists(actionFilePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Errorf("the file %v was not created", actionFilePath)
+	}
+	var gotData []byte
+	gotData, err = s.Fs.ReadFile(actionFilePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(gotData) != string(actionFileData) {
+		t.Errorf("want data %v, got data %v", string(actionFileData), string(gotData))
+	}
+}
+
+func TestStorage_GetActionFileData(t *testing.T) {
+	t.Parallel()
+	memFs := afero.Afero{Fs: afero.NewMemMapFs()}
+	s := storage.NewOsStorage(memFs)
+
+	actionFilePath := "test/example/hello.yml"
+	actionFileData := []byte("test: hello")
+	var actionFile afero.File
+
+	actionFile, _ = memFs.Create(actionFilePath)
+	_, _ = actionFile.Write(actionFileData)
+
+	gotData, err := s.GetActionData(actionFilePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if string(gotData) != string(actionFileData) {
+		t.Errorf("want data %v, got data %v", string(actionFileData), string(gotData))
+	}
+
+}

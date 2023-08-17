@@ -47,3 +47,19 @@ func (s *Storage) GetActionsForService(baseDir, serviceName string) []string {
 	})
 	return response
 }
+
+func (s *Storage) CreateActionFile(actionFilePath string, data []byte) error {
+	file, err := s.Fs.Create(actionFilePath)
+	if err != nil {
+		return err
+	}
+	_, err = file.Write(data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Storage) GetActionData(actionFilePath string) ([]byte, error) {
+	return s.Fs.ReadFile(actionFilePath)
+}
