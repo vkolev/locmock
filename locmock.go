@@ -132,4 +132,5 @@ func addUtilityRoads(i **gin.Engine) {
 	router.GET("/ip", getIp)
 	router.GET("/person", personProfile)
 	router.GET("/user-agent", userAgent)
+	router.GET("/uuid", uuidResponse)
 }

@@ -3,6 +3,7 @@ package locmock
 import (
 	randomdata "github.com/Pallinder/go-randomdata"
 	"github.com/gin-gonic/gin"
+	"github.com/twinj/uuid"
 	"net"
 	"net/http"
 )
@@ -39,4 +40,19 @@ func personProfile(c *gin.Context) {
 
 func userAgent(c *gin.Context) {
 	c.String(http.StatusOK, randomdata.UserAgentString())
+}
+
+func uuidResponse(c *gin.Context) {
+	uuidVersion := c.Query("type")
+	switch uuidVersion {
+	case "v1":
+		c.String(http.StatusOK, uuid.NewV1().String())
+	case "v4":
+		c.String(http.StatusOK, uuid.NewV4().String())
+	case "v3":
+		c.String(http.StatusOK, uuid.NewV3(uuid.NameSpaceURL).String())
+	case "v5":
+		// Add namspace and arguments from Query Parameters
+		c.String(http.StatusOK, uuid.NewV5(uuid.NameSpaceURL).String())
+	}
 }
