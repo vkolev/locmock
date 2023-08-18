@@ -66,8 +66,7 @@ func configMiddleware(config *Config) gin.HandlerFunc {
 	}
 }
 
-func Run(config Config) {
-	// Create default router
+func setupRouter(config Config) *gin.Engine {
 	router := gin.New()
 
 	// Add middlewares
@@ -124,7 +123,12 @@ func Run(config Config) {
 		}
 		c.JSON(action.RunAction())
 	})
+	return router
+}
 
+func Run(config Config) {
+	// Create default router
+	router := setupRouter(config)
 	_ = router.Run(config.Port)
 }
 
