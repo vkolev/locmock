@@ -110,3 +110,31 @@ func gzipRequest(c *gin.Context) {
 		"query_parameters": query,
 	})
 }
+
+func genericRouteResponse(c *gin.Context) {
+	allowedMethod := map[string]string{
+		"post":    "POST",
+		"get":     "GET",
+		"put":     "PUT",
+		"patch":   "PATCH",
+		"head":    "HEAD",
+		"delete":  "DELETE",
+		"options": "OPTIONS",
+	}
+	method := c.Param("method")
+	if m, ok := allowedMethod[method]; !ok || m != c.Request.Method {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"error": fmt.Sprintf("Request is not accepted request method: %v real request method: %v", m, c.Request.Method),
+		})
+		return
+	}
+
+	requestHeaders := c.Request.Header
+	requestBody := c.Request.Body
+	requestQuery := c.Request.URL.Query()
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"headers": requestHeaders,
+		"body":    requestBody,
+		"qurey":   requestQuery,
+	})
+}
