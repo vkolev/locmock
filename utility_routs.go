@@ -1,10 +1,14 @@
 package locmock
 
 import (
+	"fmt"
 	randomdata "github.com/Pallinder/go-randomdata"
 	"github.com/gin-gonic/gin"
+	"github.com/twinj/uuid"
+	"mime/multipart"
 	"net"
 	"net/http"
+	"net/url"
 )
 
 func getIp(c *gin.Context) {
@@ -39,4 +43,98 @@ func personProfile(c *gin.Context) {
 
 func userAgent(c *gin.Context) {
 	c.String(http.StatusOK, randomdata.UserAgentString())
+}
+
+func uuidResponse(c *gin.Context) {
+	uuidVersion := c.Query("type")
+	switch uuidVersion {
+	case "v1":
+		c.String(http.StatusOK, uuid.NewV1().String())
+	case "v4", "":
+		c.String(http.StatusOK, uuid.NewV4().String())
+	case "v3":
+		c.String(http.StatusOK, uuid.NewV3(uuid.NameSpaceURL).String())
+	case "v5":
+		// Add namspace and arguments from Query Parameters
+		c.String(http.StatusOK, uuid.NewV5(uuid.NameSpaceURL).String())
+	}
+}
+
+func formRequest(c *gin.Context) {
+	_ = c.Request.ParseMultipartForm(2048)
+	requestedForm := c.Request.Form
+	var file map[string][]*multipart.FileHeader
+	if c.Request.MultipartForm != nil {
+		file = c.Request.MultipartForm.File
+	}
+	requestHeaders := c.Request.Header
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"form":    requestedForm,
+		"headers": requestHeaders,
+		"method":  c.Request.Method,
+		"file":    file,
+	})
+}
+
+func redirectRequest(c *gin.Context) {
+	redirectCodes := map[string]int{
+		"301": 301,
+		"302": 302,
+		"303": 303,
+		"304": 304,
+		"305": 305,
+		"307": 307,
+	}
+	statusCode, ok := redirectCodes[c.Query("status")]
+	if !ok {
+		c.String(http.StatusBadRequest, fmt.Sprintf("Status code %v is not a redirect code", c.Query("status")))
+	}
+	redirectUrl := c.Query("url")
+
+	_, err := url.Parse(redirectUrl)
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("URL %q is not valid", redirectUrl))
+		return
+	}
+
+	c.Redirect(statusCode, redirectUrl)
+}
+
+func gzipRequest(c *gin.Context) {
+	headers := c.Request.Header
+	requestBody := c.Request.Body
+	query := c.Request.URL.Query()
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"headers":          headers,
+		"request_body":     requestBody,
+		"query_parameters": query,
+	})
+}
+
+func genericRouteResponse(c *gin.Context) {
+	allowedMethod := map[string]string{
+		"post":    "POST",
+		"get":     "GET",
+		"put":     "PUT",
+		"patch":   "PATCH",
+		"head":    "HEAD",
+		"delete":  "DELETE",
+		"options": "OPTIONS",
+	}
+	method := c.Param("method")
+	if m, ok := allowedMethod[method]; !ok || m != c.Request.Method {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"error": fmt.Sprintf("Request is not accepted request method: %v real request method: %v", m, c.Request.Method),
+		})
+		return
+	}
+
+	requestHeaders := c.Request.Header
+	requestBody := c.Request.Body
+	requestQuery := c.Request.URL.Query()
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"headers": requestHeaders,
+		"body":    requestBody,
+		"qurey":   requestQuery,
+	})
 }

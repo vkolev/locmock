@@ -5,8 +5,10 @@ go 1.20
 require (
 	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/gin-contrib/cors v1.4.0
+	github.com/gin-contrib/gzip v0.0.6
 	github.com/gin-gonic/gin v1.9.1
 	github.com/google/go-cmp v0.5.9
+	github.com/twinj/uuid v1.0.0
 	github.com/vkolev/locmock/action v0.0.0-20230814175333-079dce7814fd
 	github.com/vkolev/locmock/service v0.0.0-00010101000000-000000000000
 	gopkg.in/yaml.v3 v3.0.1
