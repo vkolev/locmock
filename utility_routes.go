@@ -88,6 +88,7 @@ func redirectRequest(c *gin.Context) {
 	statusCode, ok := redirectCodes[c.Query("status")]
 	if !ok {
 		c.String(http.StatusBadRequest, fmt.Sprintf("Status code %v is not a redirect code", c.Query("status")))
+		return
 	}
 	redirectUrl := c.Query("url")
 
