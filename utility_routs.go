@@ -98,5 +98,15 @@ func redirectRequest(c *gin.Context) {
 	}
 
 	c.Redirect(statusCode, redirectUrl)
+}
 
+func gzipRequest(c *gin.Context) {
+	headers := c.Request.Header
+	requestBody := c.Request.Body
+	query := c.Request.URL.Query()
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"headers":          headers,
+		"request_body":     requestBody,
+		"query_parameters": query,
+	})
 }

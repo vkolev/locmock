@@ -3,6 +3,7 @@ package locmock
 import (
 	"fmt"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/vkolev/locmock/service"
 	"gopkg.in/yaml.v3"
@@ -88,6 +89,7 @@ func Run(config Config) {
 
 	router.POST("admin/service/:service/actions/delete", bulkDeleteActions)
 
+	// Add the utility routes to the router
 	addUtilityRoads(&router)
 
 	// The magic catcher method - catch all requests and call appropriate service/action and return response
@@ -137,4 +139,5 @@ func addUtilityRoads(i **gin.Engine) {
 	router.PUT("/form", formRequest)
 	router.PATCH("/form", formRequest)
 	router.GET("/redirect", redirectRequest)
+	router.Any("/gzip", gzip.Gzip(gzip.DefaultCompression), gzipRequest)
 }
