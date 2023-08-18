@@ -1,12 +1,14 @@
 package locmock
 
 import (
+	"fmt"
 	randomdata "github.com/Pallinder/go-randomdata"
 	"github.com/gin-gonic/gin"
 	"github.com/twinj/uuid"
 	"mime/multipart"
 	"net"
 	"net/http"
+	"net/url"
 )
 
 func getIp(c *gin.Context) {
@@ -48,7 +50,7 @@ func uuidResponse(c *gin.Context) {
 	switch uuidVersion {
 	case "v1":
 		c.String(http.StatusOK, uuid.NewV1().String())
-	case "v4":
+	case "v4", "":
 		c.String(http.StatusOK, uuid.NewV4().String())
 	case "v3":
 		c.String(http.StatusOK, uuid.NewV3(uuid.NameSpaceURL).String())
@@ -72,4 +74,29 @@ func formRequest(c *gin.Context) {
 		"method":  c.Request.Method,
 		"file":    file,
 	})
+}
+
+func redirectRequest(c *gin.Context) {
+	redirectCodes := map[string]int{
+		"301": 301,
+		"302": 302,
+		"303": 303,
+		"304": 304,
+		"305": 305,
+		"307": 307,
+	}
+	statusCode, ok := redirectCodes[c.Query("status")]
+	if !ok {
+		c.String(http.StatusBadRequest, fmt.Sprintf("Status code %v is not a redirect code", c.Query("status")))
+	}
+	redirectUrl := c.Query("url")
+
+	_, err := url.Parse(redirectUrl)
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("URL %q is not valid", redirectUrl))
+		return
+	}
+
+	c.Redirect(statusCode, redirectUrl)
+
 }

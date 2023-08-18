@@ -136,4 +136,5 @@ func addUtilityRoads(i **gin.Engine) {
 	router.POST("/form", formRequest)
 	router.PUT("/form", formRequest)
 	router.PATCH("/form", formRequest)
+	router.GET("/redirect", redirectRequest)
 }
