@@ -10,12 +10,12 @@ Returns the requesters IP
 **Route:**
 
 - `https://localhost:8080/l/ip`
+- Method: `GET`
 - Query parameters:
   - *ipv6* - value `true`
 
 **Response:**
 
-default:
 ```text
 HTTP/1.1 200 OK
 Content-Type: text/plain; charset=utf-8
@@ -33,12 +33,12 @@ Returns a simple `pong`
 **Route:**
 
 - `https://localhost:8080/l/ping`
+- Method: `GET`
 - Query parameters:
   - None
 
 **Response:**
 
-default:
 ```text
 HTTP/1.1 200 OK
 Content-Type: text/plain; charset=utf-8
@@ -56,12 +56,12 @@ Returns a random generated user profile
 **Route:**
 
 - `https://localhost:8080/l/person`
+- Method: `GET`
 - Query parameters:
     - gender - `[male, female]`
 
 Response:
 
-default:
 ```json
 HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8
@@ -115,12 +115,12 @@ Returns a random User-Agent string
 **Route:**
 
 - `https://localhost:8080/l/user-agent`
+- Method: `GET`
 - Query parameters:
     - None
 
 **Response:**
 
-default:
 ```text
 HTTP/1.1 200 OK
 Content-Type: text/plain; charset=utf-8
@@ -130,4 +130,88 @@ Connection: close
 
 Opera/10.61 (J2ME/MIDP; Opera Mini/5.1.21219/19.999; en-US; rv:1.9.3a5) WebKit/534.5 Presto/2.6.30
 ```
+
+## UUID
+
+Returns a random `UUID` - per default it will be UUIDv4
+
+**Route:**
+
+- `https://localhost:8080/l/uuid`
+- Method: `GET`
+- Query parameters:
+  - *type* - one of `[v1, v3, v4, v5]`
+
+**Response:**
+
+```text
+HTTP/1.1 200 OK
+Content-Type: text/plain; charset=utf-8
+Date: Mon, 21 Aug 2023 05:33:45 GMT
+Content-Length: 36
+Connection: close
+
+20747749-c446-4bd6-8468-477c52c923b8
+```
+
+## Form Request
+
+Accepts a Form or Multipart-Form request and returns the requested parameters as JSON
+
+**Route:**
+
+- `https://localhost:8080/l/form`
+- Method: `POST`
+- Headers: 
+  - Multipart: `Content-Type: multipart/form-data; charset=utf-8;`
+  - Normal: `Content-Type: application/x-www-form-urlencoded; charset=utf-8`
+
+**Response:**
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Date: Mon, 21 Aug 2023 05:38:02 GMT
+Content-Length: 547
+Connection: close
+
+{
+    "file": null,
+    "form": {},
+    "headers": {
+        "Authorization": [
+            "Testing123"
+        ],
+        "Connection": [
+            "close"
+        ],
+        "Content-Length": [
+            "0"
+        ],
+        "Content-Type": [
+            "application/x-www-form-urlencoded; charset=utf-8"
+        ],
+        "Cookie": [
+            "JSESSIONID=440E8B50A752FEEBBD979C4A63D57239"
+        ],
+        "User-Agent": [
+            "RapidAPI/4.2.0 (Macintosh; OS X/13.4.1) GCDHTTPRequest"
+        ]
+    },
+    "method": "POST"
+}
+```
+
+## Redirect
+
+Redirect a request to a given URL
+
+## Gzip
+
+Returns a gzip response
+
+## Generic echo
+
+Users the path parameters to validate the request method and returns 
+the given body, query parameters back as json response.
 
