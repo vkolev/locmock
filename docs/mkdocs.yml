@@ -1,0 +1,9 @@
+site_name: LocMock - API Mock Server
+theme:
+  name: material
+  features:
+    - navigation.sections
+repo_url: https://github.com/vkolev/locmock
+repo_name: vkolev/locmock
+plugins:
+  - search
