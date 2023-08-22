@@ -1,6 +1,7 @@
 package locmock
 
 import (
+	"encoding/json"
 	"fmt"
 	randomdata "github.com/Pallinder/go-randomdata"
 	"github.com/gin-gonic/gin"
@@ -9,6 +10,8 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
+	"time"
 )
 
 func getIp(c *gin.Context) {
@@ -140,4 +143,23 @@ func getHeaders(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"headers": requestHeaders,
 	})
+}
+
+func writeStream(c *gin.Context) {
+	times := 1
+	paramTimes, ok := c.Params.Get("times")
+	if ok {
+		times, _ = strconv.Atoi(paramTimes)
+	}
+	c.Header("content-type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	enc := json.NewEncoder(c.Writer)
+	for i := 0; i < times; i++ {
+		response := map[string]string{
+			fmt.Sprintf("key_%d", i): fmt.Sprintf("value_%d", i),
+		}
+		_ = enc.Encode(response)
+		c.Writer.Flush()
+		time.Sleep(1 * time.Second)
+	}
 }

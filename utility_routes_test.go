@@ -215,3 +215,21 @@ func TestFormRequestWithInvalidMethod(t *testing.T) {
 	router.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
+
+func TestWriteStream(t *testing.T) {
+	t.Parallel()
+	_, filename, _, _ := runtime.Caller(0)
+	dataPath := strings.Replace(filename, "utility_routes_test.go", "data", 1)
+	config := Config{
+		DataPath: dataPath,
+		Port:     ":8080",
+	}
+	router := setupRouter(config)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/l/stream/2", nil)
+	want := "{\"key_0\":\"value_0\"}\n{\"key_1\":\"value_1\"}\n"
+
+	router.ServeHTTP(w, req)
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, want, w.Body.String())
+}
