@@ -1,6 +1,7 @@
 package locmock
 
 import (
+	"encoding/json"
 	"fmt"
 	randomdata "github.com/Pallinder/go-randomdata"
 	"github.com/gin-gonic/gin"
@@ -9,6 +10,8 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
+	"time"
 )
 
 func getIp(c *gin.Context) {
@@ -24,10 +27,12 @@ func getIp(c *gin.Context) {
 }
 
 func getPing(c *gin.Context) {
+	// returns the string "pong" on GET request
 	c.String(http.StatusOK, "pong")
 }
 
 func personProfile(c *gin.Context) {
+	// Return random Person Profile in JSON format
 	gender := c.Query("gender")
 	var genderType int
 	switch gender {
@@ -42,22 +47,14 @@ func personProfile(c *gin.Context) {
 }
 
 func userAgent(c *gin.Context) {
-	c.String(http.StatusOK, randomdata.UserAgentString())
+	// Return the requester User-Agent
+	userAgent := c.Request.Header.Get("User-Agent")
+	c.String(http.StatusOK, userAgent)
 }
 
 func uuidResponse(c *gin.Context) {
-	uuidVersion := c.Query("type")
-	switch uuidVersion {
-	case "v1":
-		c.String(http.StatusOK, uuid.NewV1().String())
-	case "v4", "":
-		c.String(http.StatusOK, uuid.NewV4().String())
-	case "v3":
-		c.String(http.StatusOK, uuid.NewV3(uuid.NameSpaceURL).String())
-	case "v5":
-		// Add namspace and arguments from Query Parameters
-		c.String(http.StatusOK, uuid.NewV5(uuid.NameSpaceURL).String())
-	}
+	// Return a random UUIDv4 string
+	c.String(http.StatusOK, uuid.NewV4().String())
 }
 
 func formRequest(c *gin.Context) {
@@ -88,6 +85,7 @@ func redirectRequest(c *gin.Context) {
 	statusCode, ok := redirectCodes[c.Query("status")]
 	if !ok {
 		c.String(http.StatusBadRequest, fmt.Sprintf("Status code %v is not a redirect code", c.Query("status")))
+		return
 	}
 	redirectUrl := c.Query("url")
 
@@ -137,4 +135,31 @@ func genericRouteResponse(c *gin.Context) {
 		"body":    requestBody,
 		"qurey":   requestQuery,
 	})
+}
+
+func getHeaders(c *gin.Context) {
+	requestHeaders := c.Request.Header
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"headers": requestHeaders,
+	})
+}
+
+func writeStream(c *gin.Context) {
+	times := 1
+	paramTimes, ok := c.Params.Get("times")
+	if ok {
+		times, _ = strconv.Atoi(paramTimes)
+	}
+	c.Header("content-type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	enc := json.NewEncoder(c.Writer)
+	for i := 0; i < times; i++ {
+		response := map[string]string{
+			fmt.Sprintf("key_%d", i): fmt.Sprintf("value_%d", i),
+		}
+		_ = enc.Encode(response)
+		c.Writer.Flush()
+		time.Sleep(1 * time.Second)
+	}
 }

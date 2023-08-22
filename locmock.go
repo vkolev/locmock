@@ -66,8 +66,7 @@ func configMiddleware(config *Config) gin.HandlerFunc {
 	}
 }
 
-func Run(config Config) {
-	// Create default router
+func setupRouter(config Config) *gin.Engine {
 	router := gin.New()
 
 	// Add middlewares
@@ -124,7 +123,12 @@ func Run(config Config) {
 		}
 		c.JSON(action.RunAction())
 	})
+	return router
+}
 
+func Run(config Config) {
+	// Create default router
+	router := setupRouter(config)
 	_ = router.Run(config.Port)
 }
 
@@ -138,7 +142,9 @@ func addUtilityRoads(i **gin.Engine) {
 	router.POST("/form", formRequest)
 	router.PUT("/form", formRequest)
 	router.PATCH("/form", formRequest)
+	router.Any("/headers", getHeaders)
 	router.GET("/redirect", redirectRequest)
+	router.GET("/stream/:times", writeStream)
 	router.Any("/gzip", gzip.Gzip(gzip.DefaultCompression), gzipRequest)
 	router.Any("/:method", genericRouteResponse)
 }
