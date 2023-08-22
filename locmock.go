@@ -142,6 +142,7 @@ func addUtilityRoads(i **gin.Engine) {
 	router.POST("/form", formRequest)
 	router.PUT("/form", formRequest)
 	router.PATCH("/form", formRequest)
+	router.Any("/headers", getHeaders)
 	router.GET("/redirect", redirectRequest)
 	router.Any("/gzip", gzip.Gzip(gzip.DefaultCompression), gzipRequest)
 	router.Any("/:method", genericRouteResponse)

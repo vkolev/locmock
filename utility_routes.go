@@ -24,10 +24,12 @@ func getIp(c *gin.Context) {
 }
 
 func getPing(c *gin.Context) {
+	// returns the string "pong" on GET request
 	c.String(http.StatusOK, "pong")
 }
 
 func personProfile(c *gin.Context) {
+	// Return random Person Profile in JSON format
 	gender := c.Query("gender")
 	var genderType int
 	switch gender {
@@ -42,22 +44,14 @@ func personProfile(c *gin.Context) {
 }
 
 func userAgent(c *gin.Context) {
-	c.String(http.StatusOK, randomdata.UserAgentString())
+	// Return the requester User-Agent
+	userAgent := c.Request.Header.Get("User-Agent")
+	c.String(http.StatusOK, userAgent)
 }
 
 func uuidResponse(c *gin.Context) {
-	uuidVersion := c.Query("type")
-	switch uuidVersion {
-	case "v1":
-		c.String(http.StatusOK, uuid.NewV1().String())
-	case "v4", "":
-		c.String(http.StatusOK, uuid.NewV4().String())
-	case "v3":
-		c.String(http.StatusOK, uuid.NewV3(uuid.NameSpaceURL).String())
-	case "v5":
-		// Add namspace and arguments from Query Parameters
-		c.String(http.StatusOK, uuid.NewV5(uuid.NameSpaceURL).String())
-	}
+	// Return a random UUIDv4 string
+	c.String(http.StatusOK, uuid.NewV4().String())
 }
 
 func formRequest(c *gin.Context) {
@@ -137,5 +131,13 @@ func genericRouteResponse(c *gin.Context) {
 		"headers": requestHeaders,
 		"body":    requestBody,
 		"qurey":   requestQuery,
+	})
+}
+
+func getHeaders(c *gin.Context) {
+	requestHeaders := c.Request.Header
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"headers": requestHeaders,
 	})
 }
