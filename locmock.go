@@ -128,6 +128,13 @@ func Run(config Config) {
 	_ = router.Run(config.Port)
 }
 
+func bodySizeMiddleware(c *gin.Context) {
+	// Limit upload size to 2MB
+	var w http.ResponseWriter = c.Writer
+	c.Request.Body = http.MaxBytesReader(w, c.Request.Body, 2097152)
+	c.Next()
+}
+
 func addUtilityRoads(i **gin.Engine) {
 	router := (*i).Group("/l")
 	router.GET("/ping", getPing)
@@ -135,9 +142,9 @@ func addUtilityRoads(i **gin.Engine) {
 	router.GET("/person", personProfile)
 	router.GET("/user-agent", userAgent)
 	router.GET("/uuid", uuidResponse)
-	router.POST("/form", formRequest)
-	router.PUT("/form", formRequest)
-	router.PATCH("/form", formRequest)
+	router.POST("/form", bodySizeMiddleware, formRequest)
+	router.PUT("/form", bodySizeMiddleware, formRequest)
+	router.PATCH("/form", bodySizeMiddleware, formRequest)
 	router.GET("/redirect", redirectRequest)
 	router.Any("/gzip", gzip.Gzip(gzip.DefaultCompression), gzipRequest)
 	router.Any("/:method", genericRouteResponse)
